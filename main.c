@@ -56,6 +56,72 @@ dump_general_information (struct ctf_file *file)
 	printf("-- General Information ------\n");
 	printf("   Version: %d\n", ctf_file_get_version(file));
 	printf("Compressed: %s\n", ctf_file_is_compressed(file) ? "yes" : "no");
+	/*TODO print parent file information (None if not available, basename
+	 * otherwise).  */
+	printf("\n");
+}
+
+const char*
+kind_to_string (uint8_t kind)
+{
+	const char *translation_table[] = 
+	{
+		"none", 
+		"int", 
+		"float", 
+		"pointer",
+		"array",
+		"function", 
+		"struct", 
+		"union", 
+		"enum", 
+		"forward", 
+		"typedef",
+		"volatile",
+		"const", 
+		"restrict"
+	};
+
+		if (kind <= CTF_KIND_MAX && kind >= 0)
+			return translation_table[kind];
+		else
+			return "unresolvable";
+}
+
+/**
+ * Print all types.
+ * 
+ * @param file file containing the types
+ */
+void
+dump_types (struct ctf_file *file)
+{
+	struct ctf_type *type = NULL;
+	int retval; 
+
+	printf("-- Types ------\n");
+
+	while ((retval = ctf_file_get_next_type(file, type, &type)) == CTF_OK)
+	{
+		char *name = ctf_type_get_name(type);
+
+		printf("   ID: %d\n", ctf_type_get_id(type));	
+		printf(" Name: %s\n", (name && name[0] != '\0') ? name : "N/A");	
+		printf(" Kind: %s\n", kind_to_string(ctf_type_get_kind(type)));
+		printf("\n");
+	}
+
+	if (retval == CTF_EMPTY)
+	{
+		printf("No types.");
+		return;
+	}
+
+	if (retval != CTF_END)
+	{
+		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
+	}
+
 	printf("\n");
 }
 
@@ -86,6 +152,7 @@ main (int argc, char **argv)
 
 	dump_general_information(file);
 	dump_labels(file);
+	dump_types(file);
 
 	return EXIT_SUCCESS;
 }
