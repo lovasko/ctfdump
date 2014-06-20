@@ -6,7 +6,7 @@
 /**
  * Print the usage information.
  */
-void
+static void
 usage ()
 {
 	printf("Usage: bsdctfdump file\n");
@@ -17,7 +17,7 @@ usage ()
  * 
  * @param file file containing the labels
  */
-void
+static void
 dump_labels (struct ctf_file *file)
 {
 	struct ctf_label *label = NULL;
@@ -50,7 +50,7 @@ dump_labels (struct ctf_file *file)
  *
  * @param file the file in question
  */
-void
+static void
 dump_general_information (struct ctf_file *file)
 {
 	printf("-- General Information ------\n");
@@ -61,7 +61,7 @@ dump_general_information (struct ctf_file *file)
 	printf("\n");
 }
 
-const char*
+static const char*
 kind_to_string (uint8_t kind)
 {
 	const char *translation_table[] = 
@@ -93,7 +93,7 @@ kind_to_string (uint8_t kind)
  * 
  * @param file file containing the types
  */
-void
+static void
 dump_types (struct ctf_file *file)
 {
 	struct ctf_type *type = NULL;
