@@ -45,6 +45,19 @@ dump_labels (struct ctf_file *file)
 	printf("\n");
 }
 
+/**
+ * Print general information about the file.
+ *
+ * @param file the file in question
+ */
+void
+dump_general_information (struct ctf_file *file)
+{
+	printf("-- General Information ------\n");
+	printf("   Version: %d\n", ctf_file_get_version(file));
+	printf("Compressed: %s\n", ctf_file_is_compressed(file) ? "yes" : "no");
+	printf("\n");
+}
 
 /**
  * Print all available information stored inside the CTF section.
@@ -71,6 +84,7 @@ main (int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
+	dump_general_information(file);
 	dump_labels(file);
 
 	return EXIT_SUCCESS;
