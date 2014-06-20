@@ -108,6 +108,49 @@ dump_types (struct ctf_file *file)
 		printf("   ID: %d\n", ctf_type_get_id(type));	
 		printf(" Name: %s\n", (name && name[0] != '\0') ? name : "N/A");	
 		printf(" Kind: %s\n", kind_to_string(ctf_type_get_kind(type)));
+
+		switch (ctf_type_get_kind(type))
+		{
+			case CTF_KIND_INT:
+			break;
+
+			case CTF_KIND_FLOAT:
+			break;
+
+			case CTF_KIND_ARRAY:
+			break;
+
+			case CTF_KIND_FUNC:
+			break;
+
+			case CTF_KIND_STRUCT:
+			break;
+
+			case CTF_KIND_UNION:
+			break;
+
+			case CTF_KIND_ENUM:
+			break;
+
+			case CTF_KIND_FWD_DECL
+			break;
+
+			case CTF_KIND_TYPEDEF:
+			break;
+
+			case CTF_KIND_POINTER:
+			break;
+
+			case CTF_KIND_VOLATILE:
+			break;
+
+			case CTF_KIND_CONST:
+			break;
+
+			case CTF_KIND_RESTRICT:
+			break;
+		}
+
 		printf("\n");
 	}
 
