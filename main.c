@@ -82,10 +82,36 @@ kind_to_string (uint8_t kind)
 		"restrict"
 	};
 
-		if (kind <= CTF_KIND_MAX && kind >= 0)
-			return translation_table[kind];
-		else
-			return "unresolvable";
+	if (kind <= CTF_KIND_MAX && kind >= 0)
+		return translation_table[kind];
+	else
+		return "unresolvable";
+}
+
+static const char*
+float_encoding_to_string (uint8_t encoding)
+{
+	const char *translation_table[] = 
+	{
+		"none", 
+		"single", 
+		"double", 
+		"complex",
+		"double complex",
+		"long double complex", 
+		"long double", 
+		"interval", 
+		"double interval", 
+		"long double interval", 
+		"imaginary",
+		"double imaginary",
+		"long double imaginary"
+	};
+
+	if (encoding <= CTF_FLOAT_MAX && encoding >= 0)
+		return translation_table[encoding];
+	else
+		return "unresolvable";
 }
 
 /**
@@ -105,16 +131,27 @@ dump_types (struct ctf_file *file)
 	{
 		char *name = ctf_type_get_name(type);
 
-		printf("   ID: %d\n", ctf_type_get_id(type));	
-		printf(" Name: %s\n", (name && name[0] != '\0') ? name : "N/A");	
-		printf(" Kind: %s\n", kind_to_string(ctf_type_get_kind(type)));
+		printf("      ID: %d\n", ctf_type_get_id(type));	
+		printf("    Name: %s\n", (name && name[0] != '\0') ? name : "N/A");	
+		printf("    Kind: %s\n", kind_to_string(ctf_type_get_kind(type)));
 
 		switch (ctf_type_get_kind(type))
 		{
 			case CTF_KIND_INT:
+				printf("    Size: %d\n", ctf_int_float_get_size(type->data));
+				printf("  Offset: %d\n", ctf_int_float_get_offset(type->data));
+				printf("  Signed: %s\n", ctf_int_is_signed(type->data) ? "yes" : "no");
+				printf(" Content: %s\n", 
+				    ctf_int_is_varargs(type->data) ? "varargs" : 
+						(ctf_int_is_boolean(type->data) ? "boolean" : 
+						(ctf_int_is_char(type->data) ? "char" : "number")));
 			break;
 
 			case CTF_KIND_FLOAT:
+				printf("    Size: %d\n", ctf_int_float_get_size(type->data));
+				printf("  Offset: %d\n", ctf_int_float_get_offset(type->data));
+				printf("Encoding: %s\n", float_encoding_to_string(
+				    ctf_float_get_encoding(type->data)));
 			break;
 
 			case CTF_KIND_ARRAY:
@@ -132,7 +169,7 @@ dump_types (struct ctf_file *file)
 			case CTF_KIND_ENUM:
 			break;
 
-			case CTF_KIND_FWD_DECL
+			case CTF_KIND_FWD_DECL:
 			break;
 
 			case CTF_KIND_TYPEDEF:
