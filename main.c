@@ -169,6 +169,8 @@ dump_types (struct ctf_file *file)
 	struct ctf_member *member = NULL;
 	char *type_string = NULL;
 	struct ctf_array *array;
+	struct ctf_function *function;
+	struct ctf_argument *argument = NULL;
 	while ((retval = ctf_file_get_next_type(file, type, &type)) == CTF_OK)
 	{
 		char *name = ctf_type_get_name(type);
@@ -205,6 +207,32 @@ dump_types (struct ctf_file *file)
 			break;
 
 			case CTF_KIND_FUNC:
+				function = ctf_type_get_data(type);
+				type_string = type_to_string(ctf_function_get_return_type(function));
+				printf("  Returns: %s\n", type_string);
+				free(type_string);
+
+				while ((inner_retval = ctf_function_get_next_argument(function,
+				    argument, &argument)) == CTF_OK)
+				{
+					type_string = type_to_string(ctf_argument_get_type(argument));
+					printf("     Argument: %s\n", type_string);
+					free(type_string);
+				}
+
+				if (inner_retval == CTF_EMPTY)
+				{
+					printf ("      No arguments.\n");
+					break;
+				}
+
+				if (inner_retval != CTF_END)
+				{
+					printf("ERROR: %s\n", ctf_get_error_string(inner_retval));
+				}
+
+				argument = NULL;
+				inner_retval = CTF_OK;
 			break;
 
 			case CTF_KIND_STRUCT:
