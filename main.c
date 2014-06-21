@@ -198,7 +198,9 @@ dump_types (struct ctf_file *file)
 
 			case CTF_KIND_ARRAY:
 				array = ctf_type_get_data(type);
-				printf("  Content: %s\n", type_to_string(ctf_array_get_type(array)));
+				type_string = type_to_string(ctf_array_get_type(array));
+				printf("  Content: %s\n", type_string);
+				free(type_string);
 				printf("    Count: %d\n", ctf_array_get_element_count(array));
 			break;
 
