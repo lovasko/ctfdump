@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * Print the usage information.
@@ -114,6 +115,42 @@ float_encoding_to_string (uint8_t encoding)
 		return "unresolvable";
 }
 
+static char*
+type_to_string (struct ctf_type *type)
+{
+	char result[1024];
+	memset(result, '\0', 1024);
+
+	uint8_t kind = ctf_type_get_kind(type);
+	const char *kind_string = kind_to_string(kind);
+	char *name_string = ctf_type_get_name(type);
+
+	if (ctf_kind_is_complex(kind))
+	{
+		snprintf(result, 1024, "%s %s", kind_string, name_string);
+		return strdup(result);
+	}
+
+	if (kind == CTF_KIND_FWD_DECL)
+	{
+		const char *type_reference_string = kind_to_string(type->type_reference);
+		snprintf(result, 1024, "forward declaration of %s %s", type_reference_string,
+		    name_string);
+		return strdup(result);
+	}
+
+	if (ctf_kind_is_pure_reference(kind))
+	{
+		struct ctf_type *reference_type = type->data;
+		char *reference_string = type_to_string(ctf_type_get_data(type));
+		snprintf(result, 1024, "%s", reference_string);
+		free(reference_string);
+		return strdup(result);
+	}
+
+	return NULL;
+}
+
 /**
  * Print all types.
  * 
@@ -130,30 +167,31 @@ dump_types (struct ctf_file *file)
 
 	struct ctf_enum_entry *enum_entry = NULL;
 	struct ctf_member *member = NULL;
+	char *type_string = NULL;
 	while ((retval = ctf_file_get_next_type(file, type, &type)) == CTF_OK)
 	{
 		char *name = ctf_type_get_name(type);
 
-		printf("      ID: %d\n", ctf_type_get_id(type));	
-		printf("    Name: %s\n", (name && name[0] != '\0') ? name : "N/A");	
-		printf("    Kind: %s\n", kind_to_string(ctf_type_get_kind(type)));
+		printf("       ID: %d\n", ctf_type_get_id(type));	
+		printf("     Name: %s\n", (name && name[0] != '\0') ? name : "N/A");	
+		printf("     Kind: %s\n", kind_to_string(ctf_type_get_kind(type)));
 
 		switch (ctf_type_get_kind(type))
 		{
 			case CTF_KIND_INT:
-				printf("    Size: %d\n", ctf_int_float_get_size(type->data));
-				printf("  Offset: %d\n", ctf_int_float_get_offset(type->data));
-				printf("  Signed: %s\n", ctf_int_is_signed(type->data) ? "yes" : "no");
-				printf(" Content: %s\n", 
+				printf("     Size: %d\n", ctf_int_float_get_size(type->data));
+				printf("   Offset: %d\n", ctf_int_float_get_offset(type->data));
+				printf("   Signed: %s\n", ctf_int_is_signed(type->data) ? "yes" : "no");
+				printf("  Content: %s\n", 
 				    ctf_int_is_varargs(type->data) ? "varargs" : 
 						(ctf_int_is_boolean(type->data) ? "boolean" : 
 						(ctf_int_is_char(type->data) ? "char" : "number")));
 			break;
 
 			case CTF_KIND_FLOAT:
-				printf("    Size: %d\n", ctf_int_float_get_size(type->data));
-				printf("  Offset: %d\n", ctf_int_float_get_offset(type->data));
-				printf("Encoding: %s\n", float_encoding_to_string(
+				printf("     Size: %d\n", ctf_int_float_get_size(type->data));
+				printf("   Offset: %d\n", ctf_int_float_get_offset(type->data));
+				printf(" Encoding: %s\n", float_encoding_to_string(
 				    ctf_float_get_encoding(type->data)));
 			break;
 
@@ -168,14 +206,19 @@ dump_types (struct ctf_file *file)
 				while ((inner_retval = ctf_type_get_next_member(type, member,
 				    &member)) == CTF_OK)
 				{
-					printf("      Name: %s\n", ctf_member_get_name(member));
+					printf("         Name: %s\n", ctf_member_get_name(member));
+
+					type_string = type_to_string(ctf_member_get_type(member));
+					printf("         Type: %s\n", type_string);
+					free(type_string);
+
 					if (ctf_type_get_kind(type) == CTF_KIND_STRUCT)
-						printf("    Offset: %llu\n", ctf_member_get_offset(member));
+						printf("       Offset: %llu\n", ctf_member_get_offset(member));
 				}
 
 				if (inner_retval == CTF_EMPTY)
 				{
-					printf ("     No members.\n");
+					printf ("      No members.\n");
 					break;
 				}
 
@@ -192,13 +235,13 @@ dump_types (struct ctf_file *file)
 				while ((inner_retval = ctf_type_get_next_enum_entry(type, enum_entry,
 				    &enum_entry)) == CTF_OK)
 				{
-					printf("      %s = %d\n", ctf_enum_entry_get_name(enum_entry),
+					printf("       %s = %d\n", ctf_enum_entry_get_name(enum_entry),
 					    ctf_enum_entry_get_value(enum_entry));
 				}
 
 				if (inner_retval == CTF_EMPTY)
 				{
-					printf ("     No enum entries.\n");
+					printf ("      No enum entries.\n");
 					break;
 				}
 
@@ -212,21 +255,14 @@ dump_types (struct ctf_file *file)
 			break;
 
 			case CTF_KIND_FWD_DECL:
-			break;
-
 			case CTF_KIND_TYPEDEF:
-			break;
-
 			case CTF_KIND_POINTER:
-			break;
-
 			case CTF_KIND_VOLATILE:
-			break;
-
 			case CTF_KIND_CONST:
-			break;
-
 			case CTF_KIND_RESTRICT:
+				type_string = type_to_string(type);
+				printf("Reference: %s\n", type_string);
+				free(type_string);
 			break;
 		}
 
