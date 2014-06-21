@@ -168,6 +168,7 @@ dump_types (struct ctf_file *file)
 	struct ctf_enum_entry *enum_entry = NULL;
 	struct ctf_member *member = NULL;
 	char *type_string = NULL;
+	struct ctf_array *array;
 	while ((retval = ctf_file_get_next_type(file, type, &type)) == CTF_OK)
 	{
 		char *name = ctf_type_get_name(type);
@@ -196,6 +197,9 @@ dump_types (struct ctf_file *file)
 			break;
 
 			case CTF_KIND_ARRAY:
+				array = ctf_type_get_data(type);
+				printf("  Content: %s\n", type_to_string(ctf_array_get_type(array)));
+				printf("    Count: %d\n", ctf_array_get_element_count(array));
 			break;
 
 			case CTF_KIND_FUNC:
