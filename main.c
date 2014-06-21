@@ -124,9 +124,11 @@ dump_types (struct ctf_file *file)
 {
 	struct ctf_type *type = NULL;
 	int retval; 
+	int inner_retval;
 
 	printf("-- Types ------\n");
 
+	struct ctf_enum_entry *enum_entry = NULL;
 	while ((retval = ctf_file_get_next_type(file, type, &type)) == CTF_OK)
 	{
 		char *name = ctf_type_get_name(type);
@@ -167,6 +169,26 @@ dump_types (struct ctf_file *file)
 			break;
 
 			case CTF_KIND_ENUM:
+				while ((inner_retval = ctf_type_get_next_enum_entry(type, enum_entry,
+				    &enum_entry)) == CTF_OK)
+				{
+					printf("      %s = %d\n", ctf_enum_entry_get_name(enum_entry),
+					    ctf_enum_entry_get_value(enum_entry));
+				}
+
+				if (inner_retval == CTF_EMPTY)
+				{
+					printf ("     No enum entries.\n");
+					break;
+				}
+
+				if (inner_retval != CTF_END)
+				{
+					printf("ERROR: %s\n", ctf_get_error_string(inner_retval));
+				}
+
+				enum_entry = NULL;
+				inner_retval = CTF_OK;
 			break;
 
 			case CTF_KIND_FWD_DECL:
