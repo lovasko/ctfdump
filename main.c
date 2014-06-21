@@ -357,6 +357,67 @@ dump_data_objects (struct ctf_file *file)
 }
 
 /**
+ * Print all functions.
+ * 
+ * @param file file containing the functions 
+ */
+static void
+dump_functions (struct ctf_file *file)
+{
+	struct ctf_function *function = NULL;
+	int retval; 
+	int inner_retval;
+
+	printf("-- Functions ------\n");
+
+	while ((retval = ctf_file_get_next_function(file, function, &function)) 
+	    == CTF_OK)
+	{
+		printf("    Name: %s\n", ctf_function_get_name(function));	
+
+		char *return_type_string = type_to_string(ctf_function_get_return_type(
+		    function));
+		printf(" Returns: %s\n", return_type_string);	
+		free(return_type_string);
+
+		struct ctf_argument *argument = NULL;
+		while ((inner_retval = ctf_function_get_next_argument(function,
+				argument, &argument)) == CTF_OK)
+		{
+			char *type_string = type_to_string(ctf_argument_get_type(argument));
+			printf("   Argument: %s\n", type_string);
+			free(type_string);
+		}
+
+		if (inner_retval == CTF_EMPTY)
+		{
+			printf("   No arguments.\n");
+			break;
+		}
+
+		if (inner_retval != CTF_END)
+		{
+			printf("ERROR: %s\n", ctf_get_error_string(inner_retval));
+		}
+
+		printf("\n");
+	}
+
+	if (retval == CTF_EMPTY)
+	{
+		printf("No functions.");
+		return;
+	}
+
+	if (retval != CTF_END)
+	{
+		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
+	}
+
+	printf("\n");
+}
+
+/**
  * Print all available information stored inside the CTF section.
  * 
  * @param argc argument count
@@ -385,6 +446,7 @@ main (int argc, char **argv)
 	dump_labels(file);
 	dump_types(file);
 	dump_data_objects(file);
+	dump_functions(file);
 
 	return EXIT_SUCCESS;
 }
