@@ -320,7 +320,7 @@ dump_types (struct ctf_file *file)
 /**
  * Print all data objects.
  * 
- * @param file file containing the data_objects 
+ * @param file file containing the data objects 
  */
 static void
 dump_data_objects (struct ctf_file *file)
