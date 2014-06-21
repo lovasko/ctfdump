@@ -129,6 +129,7 @@ dump_types (struct ctf_file *file)
 	printf("-- Types ------\n");
 
 	struct ctf_enum_entry *enum_entry = NULL;
+	struct ctf_member *member = NULL;
 	while ((retval = ctf_file_get_next_type(file, type, &type)) == CTF_OK)
 	{
 		char *name = ctf_type_get_name(type);
@@ -163,9 +164,28 @@ dump_types (struct ctf_file *file)
 			break;
 
 			case CTF_KIND_STRUCT:
-			break;
-
 			case CTF_KIND_UNION:
+				while ((inner_retval = ctf_type_get_next_member(type, member,
+				    &member)) == CTF_OK)
+				{
+					printf("      Name: %s\n", ctf_member_get_name(member));
+					if (ctf_type_get_kind(type) == CTF_KIND_STRUCT)
+						printf("    Offset: %llu\n", ctf_member_get_offset(member));
+				}
+
+				if (inner_retval == CTF_EMPTY)
+				{
+					printf ("     No members.\n");
+					break;
+				}
+
+				if (inner_retval != CTF_END)
+				{
+					printf("ERROR: %s\n", ctf_get_error_string(inner_retval));
+				}
+
+				member = NULL;
+				inner_retval = CTF_OK;
 			break;
 
 			case CTF_KIND_ENUM:
