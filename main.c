@@ -178,6 +178,7 @@ dump_types (struct ctf_file *file)
 		printf("       ID: %d\n", ctf_type_get_id(type));	
 		printf("     Name: %s\n", (name && name[0] != '\0') ? name : "N/A");	
 		printf("     Kind: %s\n", kind_to_string(ctf_type_get_kind(type)));
+		printf("     Root: %s\n", ctf_type_is_root(type) ? "yes" : "no");
 
 		switch (ctf_type_get_kind(type))
 		{
