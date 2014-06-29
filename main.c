@@ -28,8 +28,14 @@ dump_labels (struct ctf_file *file)
 
 	while ((retval = ctf_file_get_next_label(file, label, &label)) == CTF_OK)
 	{
-		printf(" Name: %s\n", ctf_label_get_name(label));	
-		printf("Index: %d\n", ctf_label_get_index(label));	
+		char *name;
+		(void) ctf_label_get_name(label, &name);
+
+		uint32_t index;
+		(void) ctf_label_get_index(label, &index);
+
+		printf(" Name: %s\n", name);	
+		printf("Index: %d\n", index);	
 	}
 
 	if (retval == CTF_EMPTY)
