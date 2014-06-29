@@ -60,9 +60,15 @@ dump_labels (struct ctf_file *file)
 static void
 dump_general_information (struct ctf_file *file)
 {
+	int version;
+	(void) ctf_file_get_version(file, &version);
+
+	int is_compressed;
+	(void) ctf_file_is_compressed(file, &is_compressed);
+
 	printf("-- General Information ------\n");
-	printf("   Version: %d\n", ctf_file_get_version(file));
-	printf("Compressed: %s\n", ctf_file_is_compressed(file) ? "yes" : "no");
+	printf("   Version: %d\n", version);
+	printf("Compressed: %s\n", is_compressed ? "yes" : "no");
 	/*TODO print parent file information (None if not available, basename
 	 * otherwise).  */
 	printf("\n");
