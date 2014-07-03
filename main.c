@@ -159,8 +159,24 @@ type_to_string (struct ctf_type *type)
 		free(reference_string);
 		return strdup(result);
 	}
+}
 
-	return NULL;
+static char*
+int_content_to_string (uint8_t int_content)
+{
+	if (int_content == CTF_INT_CONTENT_NUMBER)
+		return "number";
+
+	if (int_content == CTF_INT_CONTENT_CHAR)
+		return "char";
+
+	if (int_content == CTF_INT_CONTENT_BOOLEAN)
+		return "boolean";
+
+	if (int_content == CTF_INT_CONTENT_VARAGS)
+		return "varargs";
+
+	return "unknown";
 }
 
 /**
