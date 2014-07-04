@@ -368,44 +368,49 @@ dump_types (struct ctf_file *file)
 	printf("\n");
 }
 
-/* /** */
-/*  * Print all data objects. */
-/*  * */ 
-/*  * @param file file containing the data objects */ 
-/*  *1/ */
-/* static void */
-/* dump_data_objects (struct ctf_file *file) */
-/* { */
-/* 	struct ctf_data_object *data_object = NULL; */
-/* 	int retval; */ 
+/**
+ * Print all data objects.
+ * 
+ * @param file file containing the data objects 
+ */
+static void
+dump_data_objects (struct ctf_file* file)
+{
+	struct ctf_data_object* data_object = NULL;
+	int retval;
 
-/* 	printf("-- Data Objects ------\n"); */
+	printf("-- Data Objects ------\n");
 
-/* 	while ((retval = ctf_file_get_next_data_object(file, data_object, */ 
-/* 	    &data_object)) == CTF_OK) */
-/* 	{ */
-/* 		printf(" Name: %s\n", ctf_data_object_get_name(data_object)); */	
+	while ((retval = ctf_file_get_next_data_object(file, data_object, 
+	    &data_object)) == CTF_OK)
+	{
+		char* name;
+		(void) ctf_data_object_get_name(data_object, &name);
 
-/* 		char *type_string = type_to_string(ctf_data_object_get_type(data_object)); */
-/* 		printf(" Type: %s\n", type_string); */	
-/* 		free(type_string); */
+		struct ctf_type* type;
+		(void) ctf_data_object_get_type(data_object, &type);
+		char* type_string = type_to_string(type);
 
-/* 		printf("\n"); */
-/* 	} */
+		printf(" Name: %s\n", name);	
+		printf(" Type: %s\n", type_string);	
+		free(type_string);
 
-/* 	if (retval == CTF_EMPTY) */
-/* 	{ */
-/* 		printf("No data objects."); */
-/* 		return; */
-/* 	} */
+		printf("\n");
+	}
 
-/* 	if (retval != CTF_END) */
-/* 	{ */
-/* 		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval)); */
-/* 	} */
+	if (retval == CTF_EMPTY)
+	{
+		printf("No data objects.");
+		return;
+	}
 
-/* 	printf("\n"); */
-/* } */
+	if (retval != CTF_END)
+	{
+		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
+	}
+
+	printf("\n");
+}
 
 /* /** */
 /*  * Print all functions. */
@@ -496,7 +501,7 @@ main (int argc, char **argv)
 	dump_general_information(file);
 	dump_labels(file);
 	dump_types(file);
-	/* dump_data_objects(file); */
+	dump_data_objects(file);
 	/* dump_functions(file); */
 
 	return EXIT_SUCCESS;
