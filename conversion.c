@@ -108,7 +108,6 @@ type_to_string (struct ctf_type* type)
 
 			return strdup(result);
 		}
-		break;
 
 		case CTF_KIND_RESTRICT:
 		{
@@ -123,7 +122,6 @@ type_to_string (struct ctf_type* type)
 
 			return strdup(result);
 		}
-		break;
 
 		case CTF_KIND_VOLATILE:
 		{
