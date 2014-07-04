@@ -150,6 +150,28 @@ type_to_string (struct ctf_type* type)
 			return strdup(result);
 		}
 
+		case CTF_KIND_ARRAY:
+		{
+			struct ctf_array* array = data;
+			
+			char* name;
+			(void) ctf_array_get_name(array, &name);
+
+			uint32_t element_count;
+			(void) ctf_array_get_element_count(array, &element_count);
+
+			struct ctf_type* type;
+			(void) ctf_array_get_type(array, &type);
+			char* type_string = type_to_string(type);
+
+			char result[1024];
+			memset(result, '\0', 1024);
+			snprintf(result, 1024, "%s %s[%d]", type_string, name, element_count);
+			free(type_string);
+
+			return strdup(result);
+		}
+
 		case CTF_KIND_NONE:
 			return strdup("none");
 	}
