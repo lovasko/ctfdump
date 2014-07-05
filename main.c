@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 /**
  * Print the usage information.
@@ -491,26 +492,88 @@ dump_functions (struct ctf_file* file)
 int
 main (int argc, char **argv)
 {
-	if (argc < 2)
+	int option;
+	int general_information_flag;
+	int labels_flag;
+	int types_flag;
+	int data_objects_flag;
+	int functions_flag;
+
+	general_information_flag = labels_flag = types_flag = data_objects_flag = 
+	    functions_flag = 0;
+
+	while ((option = getopt(argc, argv, "gltdf")) != -1)
+	{
+		switch(option)
+		{
+			case 'g': 
+				general_information_flag = 1;
+			break;
+
+			case 'l': 
+				labels_flag = 1;
+			break;
+
+			case 't': 
+				types_flag = 1;
+			break;
+
+			case 'd': 
+				data_objects_flag = 1;
+			break;
+
+			case 'f': 
+				functions_flag = 1;
+			break;
+
+			case '?':
+				fprintf(stderr, "ERROR: invalid option %c\n", optopt);	
+				usage();
+				return EXIT_FAILURE;
+
+			default: 
+				fprintf(stderr, "ERROR: unknown error during option parsing\n");	
+				return EXIT_FAILURE;
+		}
+	}
+
+	if (argc - optind < 1)
 	{
 		usage();
 		return EXIT_FAILURE;
 	}
 
-	struct ctf_file *file;
+	struct ctf_file* file;
 	int retval;
 
-	if ((retval = ctf_read_file(argv[1], &file)) != CTF_OK)
+	if ((retval = ctf_read_file(argv[optind], &file)) != CTF_OK)
 	{
 		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
 		return EXIT_FAILURE;
 	}
 
-	dump_general_information(file);
-	dump_labels(file);
-	dump_types(file);
-	dump_data_objects(file);
-	dump_functions(file);
+	if (general_information_flag == 0 &&
+	    labels_flag == 0 && 
+	    types_flag == 0 &&
+	    data_objects_flag == 0 &&
+	    functions_flag == 0)
+		general_information_flag = labels_flag = types_flag = data_objects_flag = 
+		    functions_flag = 1;
+
+	if (general_information_flag == 1)
+		dump_general_information(file);
+
+	if (labels_flag == 1)
+		dump_labels(file);
+
+	if (types_flag == 1)
+		dump_types(file);
+
+	if (data_objects_flag == 1)
+		dump_data_objects(file);
+
+	if (functions_flag == 1)
+		dump_functions(file);
 
 	return EXIT_SUCCESS;
 }
