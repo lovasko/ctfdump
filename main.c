@@ -67,11 +67,16 @@ dump_general_information (struct ctf_file *file)
 	int is_compressed;
 	(void) ctf_file_is_compressed(file, &is_compressed);
 
+	struct ctf_file* parent_file;
+	(void) ctf_file_get_parent_file(file, &parent_file);
+
+	char* parent_basename;
+	(void) ctf_file_get_basename(parent_file, &parent_basename);
+
 	printf("-- General Information ------\n");
 	printf("   Version: %d\n", version);
 	printf("Compressed: %s\n", is_compressed ? "yes" : "no");
-	/*TODO print parent file information (None if not available, basename
-	 * otherwise).  */
+	printf("    Parent: %s\n", parent_file ? parent_basename : "N/A");
 }
 
 /**
