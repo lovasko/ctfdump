@@ -51,8 +51,6 @@ dump_labels (struct ctf_file *file)
 	{
 		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
 	}
-
-	printf("\n");
 }
 
 /**
@@ -74,7 +72,6 @@ dump_general_information (struct ctf_file *file)
 	printf("Compressed: %s\n", is_compressed ? "yes" : "no");
 	/*TODO print parent file information (None if not available, basename
 	 * otherwise).  */
-	printf("\n");
 }
 
 /**
@@ -365,8 +362,6 @@ dump_types (struct ctf_file *file)
 	{
 		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
 	}
-
-	printf("\n");
 }
 
 /**
@@ -409,8 +404,6 @@ dump_data_objects (struct ctf_file* file)
 	{
 		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
 	}
-
-	printf("\n");
 }
 
 /**
@@ -478,8 +471,6 @@ dump_functions (struct ctf_file* file)
 	{
 		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
 	}
-
-	printf("\n");
 }
 
 /**
