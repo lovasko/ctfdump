@@ -552,13 +552,15 @@ main (int argc, char **argv)
 		return EXIT_FAILURE;
 	}
 
-	if (general_information_flag == 0 &&
-	    labels_flag == 0 && 
-	    types_flag == 0 &&
-	    data_objects_flag == 0 &&
-	    functions_flag == 0)
+	if (general_information_flag == 0
+	 && labels_flag == 0
+	 && types_flag == 0
+	 && data_objects_flag == 0
+	 && functions_flag == 0)
+	{
 		general_information_flag = labels_flag = types_flag = data_objects_flag = 
 		    functions_flag = 1;
+	}
 
 	if (general_information_flag == 1)
 		dump_general_information(file);
