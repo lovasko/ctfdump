@@ -412,66 +412,74 @@ dump_data_objects (struct ctf_file* file)
 	printf("\n");
 }
 
-/* /** */
-/*  * Print all functions. */
-/*  * */ 
-/*  * @param file file containing the functions */ 
-/*  *1/ */
-/* static void */
-/* dump_functions (struct ctf_file *file) */
-/* { */
-/* 	struct ctf_function *function = NULL; */
-/* 	int retval; */ 
-/* 	int inner_retval; */
+/**
+ * Print all functions.
+ * 
+ * @param file file containing the functions 
+ */
+static void
+dump_functions (struct ctf_file* file)
+{
+	struct ctf_function* function = NULL;
+	int retval; 
+	int inner_retval;
 
-/* 	printf("-- Functions ------\n"); */
+	printf("-- Functions ------\n");
 
-/* 	while ((retval = ctf_file_get_next_function(file, function, &function)) */ 
-/* 	    == CTF_OK) */
-/* 	{ */
-/* 		printf("    Name: %s\n", ctf_function_get_name(function)); */	
+	while ((retval = ctf_file_get_next_function(file, function, &function)) 
+	    == CTF_OK)
+	{
+		char* name;
+		(void) ctf_function_get_name(function, &name);
 
-/* 		char *return_type_string = type_to_string(ctf_function_get_return_type( */
-/* 		    function)); */
-/* 		printf(" Returns: %s\n", return_type_string); */	
-/* 		free(return_type_string); */
+		struct ctf_type* return_type;
+		(void) ctf_function_get_return_type(function, &return_type);
+		char* return_type_string = type_to_string(return_type);
 
-/* 		struct ctf_argument *argument = NULL; */
-/* 		while ((inner_retval = ctf_function_get_next_argument(function, */
-/* 				argument, &argument)) == CTF_OK) */
-/* 		{ */
-/* 			char *type_string = type_to_string(ctf_argument_get_type(argument)); */
-/* 			printf("   Argument: %s\n", type_string); */
-/* 			free(type_string); */
-/* 		} */
+		printf("   Name: %s\n", name);
+		printf("Returns: %s\n", return_type_string);
 
-/* 		if (inner_retval == CTF_EMPTY) */
-/* 		{ */
-/* 			printf("   No arguments.\n"); */
-/* 			continue; */
-/* 		} */
+		free(return_type_string);
 
-/* 		if (inner_retval != CTF_END) */
-/* 		{ */
-/* 			printf("ERROR: %s\n", ctf_get_error_string(inner_retval)); */
-/* 		} */
+		struct ctf_argument* argument = NULL;
+		while ((inner_retval = ctf_function_get_next_argument(function,
+				argument, &argument)) == CTF_OK)
+		{
+			struct ctf_type* argument_type;
+			(void) ctf_argument_get_type(argument, &argument_type);
+			char *argument_type_string = type_to_string(argument_type);
 
-/* 		printf("\n"); */
-/* 	} */
+			printf("     %s\n", argument_type_string);
+			free(argument_type_string);
+		}
 
-/* 	if (retval == CTF_EMPTY) */
-/* 	{ */
-/* 		printf("No functions."); */
-/* 		return; */
-/* 	} */
+		if (inner_retval == CTF_EMPTY)
+		{
+			printf(" No arguments.\n");
+			continue;
+		}
 
-/* 	if (retval != CTF_END) */
-/* 	{ */
-/* 		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval)); */
-/* 	} */
+		if (inner_retval != CTF_END)
+		{
+			printf("ERROR: %s\n", ctf_get_error_string(inner_retval));
+		}
 
-/* 	printf("\n"); */
-/* } */
+		printf("\n");
+	}
+
+	if (retval == CTF_EMPTY)
+	{
+		printf("No functions.");
+		return;
+	}
+
+	if (retval != CTF_END)
+	{
+		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
+	}
+
+	printf("\n");
+}
 
 /**
  * Print all available information stored inside the CTF section.
@@ -502,7 +510,7 @@ main (int argc, char **argv)
 	dump_labels(file);
 	dump_types(file);
 	dump_data_objects(file);
-	/* dump_functions(file); */
+	dump_functions(file);
 
 	return EXIT_SUCCESS;
 }
