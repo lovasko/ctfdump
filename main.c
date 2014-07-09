@@ -59,7 +59,7 @@ dump_labels (ctf_file file)
  * @param file the file in question
  */
 static void
-dump_general_information (struct ctf_file *file)
+dump_general_information (ctf_file file)
 {
 	ctf_version version;
 	ctf_file_get_version(file, &version);
