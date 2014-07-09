@@ -3,7 +3,7 @@
 const char*
 kind_to_string (ctf_kind kind)
 {
-	const char *translation_table[] = 
+	static const char *translation_table[] = 
 	{
 		"none", 
 		"int", 
