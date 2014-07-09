@@ -30,37 +30,40 @@ kind_to_string (ctf_kind kind)
 char*
 type_to_string (ctf_type type)
 {
-	uint8_t kind;
-	(void) ctf_type_get_kind(type, &kind);
-
-	void* data;
-	(void) ctf_type_get_data(type, &data);
+	ctf_kind kind;
+	ctf_type_get_kind(type, &kind);
 
 	switch (kind)
 	{
 		case CTF_KIND_INT:
 		{
-			struct ctf_int* _int = data;
+			ctf_int _int;
+			ctf_int_init(type, &_int);
+
 			char* name;
-			
-			(void) ctf_int_get_name(_int, &name);
+			ctf_int_get_name(_int, &name);
+
 			return strdup(name);
 		}
 
 		case CTF_KIND_FLOAT:
 		{
-			struct ctf_float* _float = data;
-			char* name;
+			ctf_float _float;
+			ctf_float_init(type, &_float);
 
-			(void) ctf_float_get_name(_float, &name);
+			char* name;
+			ctf_float_get_name(_float, &name);
+
 			return strdup(name);
 		}
 
 		case CTF_KIND_POINTER:
 		{
+			ctf_type ref_type;
+			ctf_type_init(type, &ref_type);
+
 			char result[1024];
-			struct ctf_type* type = data;
-			char* type_string = type_to_string(type);
+			char* type_string = type_to_string(ref_type);
 
 			memset(result, '\0', 1024);
 			snprintf(result, 1024, "%s*", type_string);
@@ -73,11 +76,13 @@ type_to_string (ctf_type type)
 		case CTF_KIND_STRUCT:
 		case CTF_KIND_UNION:
 		{
-			struct ctf_struct_union* struct_union = data;
-			char result[1024];
-			char* name;
+			ctf_struct_union struct_union;
+			ctf_struct_union_init(type, &struct_union);
 
-			(void) ctf_struct_union_get_name(struct_union, &name);
+			char* name;
+			ctf_struct_union_get_name(struct_union, &name);
+
+			char result[1024];
 			memset(result, '\0', 1024);
 			snprintf(result, 1024, "%s %s", 
 			    (kind == CTF_KIND_STRUCT ? "struct" : "union"), name);
@@ -87,10 +92,11 @@ type_to_string (ctf_type type)
 
 		case CTF_KIND_TYPEDEF:
 		{
-			struct ctf_typedef* _typedef = data;
-			char* name;
+			ctf_typedef _typedef;
+			ctf_typedef_init(type, &_typedef);
 
-			(void) ctf_typedef_get_name(_typedef, &name);
+			char* name;
+			ctf_typedef_get_name(_typedef, &name);
 
 			return strdup(name);
 		}
@@ -98,10 +104,12 @@ type_to_string (ctf_type type)
 		case CTF_KIND_CONST:
 		{
 			/* TODO special case const pointer! */
-			struct ctf_type* type = data;
-			char* ref_type_string = type_to_string(type);
-			char result[1024];
+			ctf_type ref_type;
+			ctf_type_init(type, &ref_type);
 
+			char* ref_type_string = type_to_string(ref_type);
+
+			char result[1024];
 			memset(result, '\0', 1024);
 			snprintf(result, 1024, "const %s", ref_type_string);
 			free(ref_type_string);
@@ -112,10 +120,12 @@ type_to_string (ctf_type type)
 		case CTF_KIND_RESTRICT:
 		{
 			/* TODO special case restrict pointer! */
-			struct ctf_type* type = data;
-			char* ref_type_string = type_to_string(type);
-			char result[1024];
+			ctf_type ref_type;
+			ctf_type_init(type, &ref_type);
 
+			char* ref_type_string = type_to_string(ref_type);
+
+			char result[1024];
 			memset(result, '\0', 1024);
 			snprintf(result, 1024, "restrict %s", ref_type_string);
 			free(ref_type_string);
@@ -126,10 +136,12 @@ type_to_string (ctf_type type)
 		case CTF_KIND_VOLATILE:
 		{
 			/* TODO special case volatile pointer! */
-			struct ctf_type* type = data;
-			char* ref_type_string = type_to_string(type);
-			char result[1024];
+			ctf_type ref_type;
+			ctf_type_init(type, &ref_type);
 
+			char* ref_type_string = type_to_string(ref_type);
+
+			char result[1024];
 			memset(result, '\0', 1024);
 			snprintf(result, 1024, "volatile %s", ref_type_string);
 			free(ref_type_string);
@@ -139,11 +151,13 @@ type_to_string (ctf_type type)
 
 		case CTF_KIND_FWD_DECL:
 		{
-			struct ctf_fwd_decl* fwd_decl = data;
-			char result[1024];
-			char* name;
+			ctf_fwd_decl fwd_decl;
+			ctf_fwd_decl_init(type, &fwd_decl);
 
-			(void) ctf_fwd_decl_get_name(fwd_decl, &name);
+			char* name;
+			ctf_fwd_decl_get_name(fwd_decl, &name);
+
+			char result[1024];
 			memset(result, '\0', 1024);
 			snprintf(result, 1024, "forward declaration of %s", name);
 
@@ -152,22 +166,58 @@ type_to_string (ctf_type type)
 
 		case CTF_KIND_ARRAY:
 		{
-			struct ctf_array* array = data;
+			ctf_array array;
+			ctf_array_init(type, &array);
 			
 			char* name;
-			(void) ctf_array_get_name(array, &name);
+			ctf_array_get_name(array, &name);
 
-			uint32_t element_count;
-			(void) ctf_array_get_element_count(array, &element_count);
+			ctf_array_length length;
+			ctf_array_get_length(array, &length);
 
-			struct ctf_type* type;
-			(void) ctf_array_get_type(array, &type);
-			char* type_string = type_to_string(type);
+			ctf_type content_type;
+			ctf_array_get_content_type(array, &content_type);
+
+			char* type_string = type_to_string(content_type);
 
 			char result[1024];
 			memset(result, '\0', 1024);
-			snprintf(result, 1024, "%s %s[%d]", type_string, name, element_count);
+			snprintf(result, 1024, "%s %s[%d]", type_string, name, length);
 			free(type_string);
+
+			return strdup(result);
+		}
+
+		case CTF_KIND_ENUM:
+		{
+			ctf_enum _enum;
+			ctf_enum_init(type, &_enum);
+
+			char* name;
+			ctf_enum_get_name(_enum, &name);
+
+			char result[1024];
+			memset(result, '\0', 1024);
+			snprintf(result, 1024, "enum %s", name);
+			
+			return strdup(result);
+		}
+
+		case CTF_KIND_FUNC:
+		{
+			ctf_function function;
+			ctf_function_init(type, &function);
+
+			ctf_type return_type;
+			ctf_function_get_return_type(function, &return_type);
+
+			char* return_type_string;
+			return_type_string = type_to_string(return_type);
+
+			char result[1024];
+			memset(result, '\0', 1024);
+			snprintf(result, 1024, "%s ()", return_type_string);
+			free(return_type_string);
 
 			return strdup(result);
 		}
@@ -188,25 +238,6 @@ float_encoding_to_string (ctf_float_encoding float_encoding)
 		"single", 
 		"double", 
 		"complex",
-		case CTF_KIND_FUNC:
-		{
-			ctf_function function;
-			ctf_function_init(type, &function);
-
-			ctf_type return_type;
-			ctf_function_get_return_type(function, &return_type);
-
-			char* return_type_string;
-			return_type_string = type_to_string(return_type);
-
-			char result[1024];
-			memset(result, '\0', 1024);
-			snprintf(result, 1024, "%s ()", return_type_string);
-			free(return_type_string);
-
-			return strdup(result);
-		}
-
 		"double complex",
 		"long double complex", 
 		"long double", 
