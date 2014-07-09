@@ -61,17 +61,17 @@ dump_labels (struct ctf_file *file)
 static void
 dump_general_information (struct ctf_file *file)
 {
-	int version;
-	(void) ctf_file_get_version(file, &version);
+	ctf_version version;
+	ctf_file_get_version(file, &version);
 
-	int is_compressed;
-	(void) ctf_file_is_compressed(file, &is_compressed);
+	ctf_bool is_compressed;
+	ctf_file_is_compressed(file, &is_compressed);
 
-	struct ctf_file* parent_file;
-	(void) ctf_file_get_parent_file(file, &parent_file);
+	ctf_file parent_file;
+	ctf_file_get_parent_file(file, &parent_file);
 
 	char* parent_basename;
-	(void) ctf_file_get_basename(parent_file, &parent_basename);
+	ctf_file_get_basename(parent_file, &parent_basename);
 
 	printf("-- General Information ------\n");
 	printf("   Version: %d\n", version);
