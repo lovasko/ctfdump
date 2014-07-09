@@ -21,7 +21,7 @@ kind_to_string (uint8_t kind)
 		"restrict"
 	};
 
-	if (kind <= CTF_KIND_MAX && kind >= 0)
+	if (kind <= CTF_KIND_MAX && kind >= CTF_KIND_MIN)
 		return translation_table[kind];
 	else
 		return "unresolvable";
