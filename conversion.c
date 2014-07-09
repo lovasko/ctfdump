@@ -1,7 +1,7 @@
 #include "conversion.h"
 
 const char*
-kind_to_string (uint8_t kind)
+kind_to_string (ctf_kind kind)
 {
 	const char *translation_table[] = 
 	{
@@ -28,7 +28,7 @@ kind_to_string (uint8_t kind)
 }
 
 char*
-type_to_string (struct ctf_type* type)
+type_to_string (ctf_type type)
 {
 	uint8_t kind;
 	(void) ctf_type_get_kind(type, &kind);
@@ -180,7 +180,7 @@ type_to_string (struct ctf_type* type)
 }
 
 const char*
-float_encoding_to_string (uint8_t float_encoding)
+float_encoding_to_string (ctf_float_encoding float_encoding)
 {
 	const char* translation_table[] = 
 	{
@@ -207,7 +207,7 @@ float_encoding_to_string (uint8_t float_encoding)
 }
 
 const char*
-int_content_to_string (uint8_t int_content)
+int_content_to_string (ctf_int_content int_content)
 {
 	if (int_content == CTF_INT_CONTENT_NUMBER)
 		return "number";
