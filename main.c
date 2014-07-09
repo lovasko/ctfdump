@@ -325,7 +325,7 @@ dump_types (ctf_file file)
 					char* argument_type_string;
 					argument_type_string = type_to_string(argument_type);
 
-					printf("       %s", argument_type_string);
+					printf("       %s\n", argument_type_string);
 					free(argument_type_string);
 				}
 
