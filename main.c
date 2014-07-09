@@ -22,7 +22,7 @@ usage ()
  * @param file file containing the labels
  */
 static void
-dump_labels (struct ctf_file *file)
+dump_labels (ctf_file file)
 {
 	ctf_label label = NULL;
 	int retval; 
