@@ -168,7 +168,7 @@ dump_types (ctf_file file)
 				ctf_array_init(type, &array);
 
 				ctf_type content_type;
-				ctf_array_get_type(array, &content_type);
+				ctf_array_get_content_type(array, &content_type);
 
 				ctf_array_length length;
 				ctf_array_get_length(array, &length);
