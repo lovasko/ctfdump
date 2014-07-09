@@ -287,7 +287,7 @@ dump_types (ctf_file file)
 				ctf_typedef_get_type(_typedef, &old_type);
 
 				char* type_string;
-				type_string = type_to_string(new_type);
+				type_string = type_to_string(old_type);
 
 				printf(" Old type: %s\n", type_string);
 				printf(" New type: %s\n", name);
