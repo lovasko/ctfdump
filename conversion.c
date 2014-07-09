@@ -188,6 +188,25 @@ float_encoding_to_string (ctf_float_encoding float_encoding)
 		"single", 
 		"double", 
 		"complex",
+		case CTF_KIND_FUNC:
+		{
+			ctf_function function;
+			ctf_function_init(type, &function);
+
+			ctf_type return_type;
+			ctf_function_get_return_type(function, &return_type);
+
+			char* return_type_string;
+			return_type_string = type_to_string(return_type);
+
+			char result[1024];
+			memset(result, '\0', 1024);
+			snprintf(result, 1024, "%s ()", return_type_string);
+			free(return_type_string);
+
+			return strdup(result);
+		}
+
 		"double complex",
 		"long double complex", 
 		"long double", 
