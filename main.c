@@ -486,7 +486,7 @@ dump_functions (struct ctf_file* file)
  * @return EXIT_SUCCESS on success, EXIT_FAILURE on failure
  */
 int
-main (int argc, char **argv)
+main (int argc, char* argv[])
 {
 	int option;
 	int general_information_flag;
