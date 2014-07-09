@@ -539,10 +539,10 @@ main (int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	struct ctf_file* file;
+	ctf_file file;
 	int retval;
 
-	if ((retval = ctf_read_file(argv[optind], &file)) != CTF_OK)
+	if ((retval = ctf_file_read(argv[optind], &file)) != CTF_OK)
 	{
 		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
 		return EXIT_FAILURE;
