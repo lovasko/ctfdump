@@ -182,7 +182,7 @@ type_to_string (ctf_type type)
 const char*
 float_encoding_to_string (ctf_float_encoding float_encoding)
 {
-	const char* translation_table[] = 
+	static const char* translation_table[] = 
 	{
 		"none", 
 		"single", 
