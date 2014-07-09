@@ -8,16 +8,16 @@
 #include <string.h>
 
 const char*
-kind_to_string (uint8_t kind);
+kind_to_string (ctf_kind kind);
 
 char*
-type_to_string (struct ctf_type* type);
+type_to_string (ctf_type type);
 
 const char*
-float_encoding_to_string (uint8_t float_encoding);
+float_encoding_to_string (ctf_float_encoding float_encoding);
 
 const char*
-int_content_to_string (uint8_t int_content);
+int_content_to_string (ctf_int_content int_content);
 
 #endif
 
