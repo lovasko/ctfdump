@@ -24,18 +24,18 @@ usage ()
 static void
 dump_labels (struct ctf_file *file)
 {
-	struct ctf_label *label = NULL;
+	ctf_label label = NULL;
 	int retval; 
 
 	printf("-- Labels ------\n");
 
 	while ((retval = ctf_file_get_next_label(file, label, &label)) == CTF_OK)
 	{
-		char *name;
-		(void) ctf_label_get_name(label, &name);
+		char* name;
+		ctf_label_get_name(label, &name);
 
-		uint32_t index;
-		(void) ctf_label_get_index(label, &index);
+		ctf_label_index index;
+		ctf_label_get_index(label, &index);
 
 		printf(" Name: %s\n", name);	
 		printf("Index: %d\n", index);	
