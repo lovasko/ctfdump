@@ -1,4 +1,4 @@
-#include "../libctf/src/libctf.h"
+#include "../lctf/src/libctf.h"
 
 #include "conversion.h"
 
@@ -85,9 +85,9 @@ dump_general_information (ctf_file file)
  * @param file file containing the types
  */
 static void
-dump_types (struct ctf_file *file)
+dump_types (ctf_file file)
 {
-	struct ctf_type *type = NULL;
+	ctf_type type = NULL;
 	int retval; 
 	int inner_retval;
 
@@ -95,17 +95,14 @@ dump_types (struct ctf_file *file)
 
 	while ((retval = ctf_file_get_next_type(file, type, &type)) == CTF_OK)
 	{
-		uint16_t id;
-		(void) ctf_type_get_id(type, &id);
+		ctf_id id;
+		ctf_type_get_id(type, &id);
 
-		uint8_t kind;
-		(void) ctf_type_get_kind(type, &kind);
+		ctf_kind kind;
+		ctf_type_get_kind(type, &kind);
 
-		int is_root;
-		(void) ctf_type_is_root(type, &is_root);
-
-		void* data;
-		(void) ctf_type_get_data(type, &data);
+		ctf_bool is_root;
+		ctf_type_is_root(type, &is_root);
 
 		printf("       ID: %d\n", id);	
 		printf("     Kind: %s\n", kind_to_string(kind));
@@ -115,22 +112,23 @@ dump_types (struct ctf_file *file)
 		{
 			case CTF_KIND_INT:
 			{
-				struct ctf_int* _int = data;
+				ctf_int _int;
+				ctf_int_init(type, &_int);
 				
-				uint16_t size;
-				(void) ctf_int_get_size(_int, &size);
+				ctf_int_size size;
+				ctf_int_get_size(_int, &size);
 
-				uint8_t offset;
-				(void) ctf_int_get_offset(_int, &offset);
+				ctf_int_offset offset;
+				ctf_int_get_offset(_int, &offset);
 
-				uint8_t content;
-				(void) ctf_int_get_content(_int, &content);
+				ctf_int_content content;
+				ctf_int_get_content(_int, &content);
 
-				int is_signed;
-				(void) ctf_int_is_signed(_int, &is_signed);
+				ctf_bool is_signed;
+				ctf_int_is_signed(_int, &is_signed);
 
 				char* name;
-				(void) ctf_int_get_name(_int, &name);
+				ctf_int_get_name(_int, &name);
 
 				printf("     Name: %s\n", name);
 				printf("     Size: %d\n", size);
@@ -142,19 +140,20 @@ dump_types (struct ctf_file *file)
 
 			case CTF_KIND_FLOAT:
 			{
-				struct ctf_float* _float = data;	
+				ctf_float _float;
+				ctf_float_init(type, &_float);
 
-				uint16_t size;
-				(void) ctf_float_get_size(_float, &size);
+				ctf_float_size size;
+				ctf_float_get_size(_float, &size);
 
-				uint8_t offset;
-				(void) ctf_float_get_offset(_float, &offset);
+				ctf_float_offset offset;
+				ctf_float_get_offset(_float, &offset);
 
-				uint8_t encoding;
-				(void) ctf_float_get_encoding(_float, &encoding);
+				ctf_float_encoding encoding;
+				ctf_float_get_encoding(_float, &encoding);
 
 				char* name;
-				(void) ctf_float_get_name(_float, &name);
+				ctf_float_get_name(_float, &name);
 
 				printf("     Name: %s\n", name);
 				printf("     Size: %d\n", size);
@@ -165,22 +164,24 @@ dump_types (struct ctf_file *file)
 
 			case CTF_KIND_ARRAY:
 			{
-				struct ctf_array* array = data;
+				ctf_array array;
+				ctf_array_init(type, &array);
 
-				struct ctf_type* type;
-				char* type_string;
-				(void) ctf_array_get_type(array, &type);
-				type_string = type_to_string(type);
+				ctf_type content_type;
+				ctf_array_get_type(array, &content_type);
 
-				uint32_t element_count;
-				(void) ctf_array_get_element_count(array, &element_count);
+				ctf_array_length length;
+				ctf_array_get_length(array, &length);
 
 				char* name;
-				(void) ctf_array_get_name(array, &name);
+				ctf_array_get_name(array, &name);
+
+				char* type_string;
+				type_string = type_to_string(content_type);
 
 				printf("     Name: %s\n", name);
 				printf("  Content: %s\n", type_string);
-				printf("   Length: %d\n", element_count);
+				printf("   Length: %d\n", length);
 			
 				free(type_string);
 			}
@@ -188,22 +189,23 @@ dump_types (struct ctf_file *file)
 
 			case CTF_KIND_ENUM:
 			{
-				struct ctf_enum* _enum = data;	
+				ctf_enum _enum;
+				ctf_enum_init(type, &_enum);
 
 				char* name;
-				(void) ctf_enum_get_name(_enum, &name);
+				ctf_enum_get_name(_enum, &name);
 
 				printf("     Name: %s\n", name);
 
-				struct ctf_enum_entry* enum_entry = NULL;	
+				ctf_enum_entry enum_entry = NULL;	
 				while ((inner_retval = ctf_enum_get_next_enum_entry(_enum, enum_entry,
 				    &enum_entry)) == CTF_OK)
 				{
 					char* entry_name;
-					(void) ctf_enum_entry_get_name(enum_entry, &entry_name);
+					ctf_enum_entry_get_name(enum_entry, &entry_name);
 
-					int32_t entry_value;
-					(void) ctf_enum_entry_get_value(enum_entry, &entry_value);
+					ctf_enum_entry_value entry_value;
+					ctf_enum_entry_get_value(enum_entry, &entry_value);
 
 					printf("       %s = %d\n", entry_name, entry_value); 
 				}
@@ -225,30 +227,33 @@ dump_types (struct ctf_file *file)
 			case CTF_KIND_UNION:
 			case CTF_KIND_STRUCT:
 			{
-				struct ctf_struct_union* struct_union = data;
+				ctf_struct_union struct_union;
+				ctf_struct_union_init(type, &struct_union);
 
 				char* name;
-				(void) ctf_struct_union_get_name(struct_union, &name);
+				ctf_struct_union_get_name(struct_union, &name);
 
 				printf("     Name: %s\n", name);
 
-				struct ctf_member* member = NULL;
+				ctf_member member = NULL;
 				while ((inner_retval = ctf_struct_union_get_next_member(struct_union, 
 				    member, &member)) == CTF_OK)
 				{
 					char* member_name;
-					(void) ctf_member_get_name(member, &member_name);
+					ctf_member_get_name(member, &member_name);
 
-					struct ctf_type* member_type;
-					(void) ctf_member_get_type(member, &member_type);
-					char* member_type_string = type_to_string(member_type);
+					ctf_type member_type;
+					ctf_member_get_type(member, &member_type);
+
+					char* member_type_string;
+					member_type_string = type_to_string(member_type);
 
 					printf("       %s %s", member_type_string, member_name);
 
 					if (kind == CTF_KIND_STRUCT)
 					{
-						uint64_t member_offset;
-						(void) ctf_member_get_offset(member, &member_offset);
+						ctf_member_offset member_offset;
+						ctf_member_get_offset(member, &member_offset);
 
 						printf(" | %llu", member_offset);
 					}
@@ -272,14 +277,17 @@ dump_types (struct ctf_file *file)
 
 			case CTF_KIND_TYPEDEF:
 			{
-				struct ctf_typedef* _typedef = data;
+				ctf_typedef _typedef;
+				ctf_typedef_init(type, &_typedef);
 				
 				char* name;
-				(void) ctf_typedef_get_name(_typedef, &name);
+				ctf_typedef_get_name(_typedef, &name);
 
-				struct ctf_type* type;
-				(void) ctf_typedef_get_type(_typedef, &type);
-				char* type_string = type_to_string(type);
+				ctf_type old_type;
+				ctf_typedef_get_type(_typedef, &old_type);
+
+				char* type_string;
+				type_string = type_to_string(new_type);
 
 				printf(" Old type: %s\n", type_string);
 				printf(" New type: %s\n", name);
@@ -290,28 +298,33 @@ dump_types (struct ctf_file *file)
 
 			case CTF_KIND_FUNC:
 			{
-				struct ctf_function* function = data;
+				ctf_function function;
+				ctf_function_init(type, &function);
 
 				char* name;
-				(void) ctf_function_get_name(function, &name);
+				ctf_function_get_name(function, &name);
 
-				struct ctf_type* return_type;
-				(void) ctf_function_get_return_type(function, &return_type);
-				char* return_type_string = type_to_string(return_type);
+				ctf_type return_type;
+				ctf_function_get_return_type(function, &return_type);
+
+				char* return_type_string;
+				return_type_string = type_to_string(return_type);
 
 				printf("     Name: %s\n", name);
 				printf("  Returns: %s\n", return_type_string);
 
 				free(return_type_string);
 
-				struct ctf_argument* argument = NULL;
+				ctf_argument argument = NULL;
 				while ((inner_retval = ctf_function_get_next_argument(function,
 				    argument, &argument)) == CTF_OK)
 				{
-					struct ctf_type* argument_type;
-					(void) ctf_argument_get_type(argument, &argument_type);
+					ctf_type argument_type;
+					ctf_argument_get_type(argument, &argument_type);
 
-					char* argument_type_string = type_to_string(argument_type);
+					char* argument_type_string;
+					argument_type_string = type_to_string(argument_type);
+
 					printf("       %s", argument_type_string);
 					free(argument_type_string);
 				}
@@ -335,8 +348,11 @@ dump_types (struct ctf_file *file)
 			case CTF_KIND_CONST:
 			case CTF_KIND_RESTRICT:
 			{
-				struct ctf_type* ref = data;
-				char* type_string = type_to_string(ref);
+				ctf_type ref_type;
+				ctf_type_init(type, &ref_type);
+
+				char* type_string;
+				type_string = type_to_string(ref_type);
 
 				printf("Reference: %s\n", type_string);
 				free(type_string);
@@ -345,10 +361,12 @@ dump_types (struct ctf_file *file)
 
 			case CTF_KIND_FWD_DECL:
 			{
-				struct ctf_fwd_decl* fwd_decl = data;
-				char* name;
+				ctf_fwd_decl fwd_decl;
+				ctf_fwd_decl_init(type, &fwd_decl);
 
-				(void) ctf_fwd_decl_get_name(fwd_decl, &name);
+				char* name;
+				ctf_fwd_decl_get_name(fwd_decl, &name);
+
 				printf("     Name: %s\n", name);
 			}
 			break;
@@ -375,9 +393,9 @@ dump_types (struct ctf_file *file)
  * @param file file containing the data objects 
  */
 static void
-dump_data_objects (struct ctf_file* file)
+dump_data_objects (ctf_file file)
 {
-	struct ctf_data_object* data_object = NULL;
+	ctf_data_object data_object = NULL;
 	int retval;
 
 	printf("-- Data Objects ------\n");
@@ -386,10 +404,11 @@ dump_data_objects (struct ctf_file* file)
 	    &data_object)) == CTF_OK)
 	{
 		char* name;
-		(void) ctf_data_object_get_name(data_object, &name);
+		ctf_data_object_get_name(data_object, &name);
 
-		struct ctf_type* type;
-		(void) ctf_data_object_get_type(data_object, &type);
+		ctf_type type;
+		ctf_data_object_get_type(data_object, &type);
+
 		char* type_string = type_to_string(type);
 
 		printf(" Name: %s\n", name);	
@@ -417,9 +436,9 @@ dump_data_objects (struct ctf_file* file)
  * @param file file containing the functions 
  */
 static void
-dump_functions (struct ctf_file* file)
+dump_functions (ctf_file file)
 {
-	struct ctf_function* function = NULL;
+	ctf_function function = NULL;
 	int retval; 
 	int inner_retval;
 
@@ -429,10 +448,11 @@ dump_functions (struct ctf_file* file)
 	    == CTF_OK)
 	{
 		char* name;
-		(void) ctf_function_get_name(function, &name);
+		ctf_function_get_name(function, &name);
 
-		struct ctf_type* return_type;
-		(void) ctf_function_get_return_type(function, &return_type);
+		ctf_type return_type;
+		ctf_function_get_return_type(function, &return_type);
+
 		char* return_type_string = type_to_string(return_type);
 
 		printf("   Name: %s\n", name);
@@ -440,13 +460,14 @@ dump_functions (struct ctf_file* file)
 
 		free(return_type_string);
 
-		struct ctf_argument* argument = NULL;
+		ctf_argument argument = NULL;
 		while ((inner_retval = ctf_function_get_next_argument(function,
 				argument, &argument)) == CTF_OK)
 		{
-			struct ctf_type* argument_type;
-			(void) ctf_argument_get_type(argument, &argument_type);
-			char *argument_type_string = type_to_string(argument_type);
+			ctf_type argument_type;
+			ctf_argument_get_type(argument, &argument_type);
+
+			char* argument_type_string = type_to_string(argument_type);
 
 			printf("     %s\n", argument_type_string);
 			free(argument_type_string);
