@@ -226,7 +226,14 @@ type_to_string (ctf_type type)
 			return strdup("none");
 	}
 
-	return strdup("unresolvable");
+	char result[1024];
+	memset(result, '\0', 1024);
+
+	ctf_id id;
+	ctf_type_get_id(type, &id);
+
+	snprintf(result, 1024, "%d %d unresolvable", id, kind);
+	return strdup(result);
 }
 
 const char*
