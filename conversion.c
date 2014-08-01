@@ -169,9 +169,6 @@ type_to_string (ctf_type type)
 			ctf_array array;
 			ctf_array_init(type, &array);
 			
-			char* name;
-			ctf_array_get_name(array, &name);
-
 			ctf_array_length length;
 			ctf_array_get_length(array, &length);
 
@@ -182,7 +179,7 @@ type_to_string (ctf_type type)
 
 			char result[1024];
 			memset(result, '\0', 1024);
-			snprintf(result, 1024, "%s %s[%d]", type_string, name, length);
+			snprintf(result, 1024, "%s [%d]", type_string, length);
 			free(type_string);
 
 			return strdup(result);
