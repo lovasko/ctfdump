@@ -1,4 +1,4 @@
-#include "../lctf/src/libctf.h"
+#include "../libctf/src/libctf.h"
 
 #include "conversion.h"
 
@@ -173,13 +173,9 @@ dump_types (ctf_file file)
 				ctf_array_length length;
 				ctf_array_get_length(array, &length);
 
-				char* name;
-				ctf_array_get_name(array, &name);
-
 				char* type_string;
 				type_string = type_to_string(content_type);
 
-				printf("     Name: %s\n", name);
 				printf("  Content: %s\n", type_string);
 				printf("   Length: %d\n", length);
 			
