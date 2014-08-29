@@ -5,7 +5,7 @@ kind_to_string (ctf_kind kind)
 {
 	static const char *translation_table[] = 
 	{
-		"none", 
+		"kind:none", 
 		"int", 
 		"float", 
 		"pointer",
@@ -59,8 +59,11 @@ type_to_string (ctf_type type)
 
 		case CTF_KIND_POINTER:
 		{
+			ctf_pointer pointer;
+			ctf_pointer_init(type, &pointer);
+
 			ctf_type ref_type;
-			ctf_type_init(type, &ref_type);
+			ctf_pointer_get_type(pointer, &ref_type);
 
 			char result[1024];
 			char* type_string = type_to_string(ref_type);
@@ -220,7 +223,7 @@ type_to_string (ctf_type type)
 		}
 
 		case CTF_KIND_NONE:
-			return strdup("none");
+			return strdup("type_to_string:none");
 	}
 
 	char result[1024];
@@ -238,7 +241,7 @@ float_encoding_to_string (ctf_float_encoding float_encoding)
 {
 	static const char* translation_table[] = 
 	{
-		"none", 
+		"float:none", 
 		"single", 
 		"double", 
 		"complex",
