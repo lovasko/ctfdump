@@ -2,3 +2,4 @@ ctfdump
 ctfdump.core
 a.out
 a.out.core
+.ninja*
