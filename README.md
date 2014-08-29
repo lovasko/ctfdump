@@ -1,6 +1,8 @@
 # ctfdump
-Command-line utility that dumps the CTF data of the selected file to the
-stdout.
+Command-line BSD-licensed utility that dumps the CTF data of the selected file
+to the stdout. For more information about the CTF format please consult the
+[library](https://github.com/lovasko/libctf) that provides the format
+implementation.
 
 ## Usage
 `ctfdump [-dfglt] <file>`
