@@ -1,0 +1,13 @@
+cflags = -Wall
+ldflags = -lbsdctf
+
+rule cc
+ command = clang $cflags -c $in -o $out
+
+rule link
+ command = clang -o $out $in $ldflags
+
+build bin/ctfdump: link obj/main.o obj/conversion.o
+build obj/main.o: cc src/main.c
+build obj/conversion.o: cc src/conversion.c
+
