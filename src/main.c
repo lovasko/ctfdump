@@ -13,7 +13,21 @@
 static void
 usage ()
 {
-	printf("Usage: bsdctfdump file\n");
+	printf("Usage: ctfdump [-dhfglt] <file>\n");
+}
+
+/**
+ * Print the help string.
+ */
+static void
+help ()
+{	
+	printf(" -h\tprint this help message\n");
+	printf(" -g\tdump general format information\n");
+	printf(" -d\tdump data objects\n");
+	printf(" -f\tdump function objects\n");
+	printf(" -l\tdump labels\n");
+	printf(" -t\tdump types\n");
 }
 
 /**
@@ -515,7 +529,7 @@ main (int argc, char* argv[])
 	general_information_flag = labels_flag = types_flag = data_objects_flag = 
 	    functions_flag = 0;
 
-	while ((option = getopt(argc, argv, "gltdf")) != -1)
+	while ((option = getopt(argc, argv, "hgltdf")) != -1)
 	{
 		switch(option)
 		{
@@ -538,6 +552,11 @@ main (int argc, char* argv[])
 			case 'f': 
 				functions_flag = 1;
 			break;
+
+			case 'h':
+				usage();
+				help();
+				return EXIT_FAILURE;
 
 			case '?':
 				fprintf(stderr, "ERROR: invalid option %c\n", optopt);	
