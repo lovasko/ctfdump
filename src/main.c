@@ -1,6 +1,4 @@
-#include "../../libctf/src/libctf.h"
-
-#include "conversion.h"
+#include <libctf/libctf.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,7 +117,7 @@ dump_types (ctf_file file)
 		ctf_type_is_root(type, &is_root);
 
 		printf("       ID: %d\n", id);	
-		printf("     Kind: %s\n", kind_to_string(kind));
+		printf("     Kind: %s\n", ctf_kind_to_string(kind));
 		printf("     Root: %s\n", is_root ? "yes" : "no");
 
 		switch (kind)
@@ -148,7 +146,7 @@ dump_types (ctf_file file)
 				printf("     Size: %d\n", size);
 				printf("   Offset: %d\n", offset);
 				printf("   Signed: %s\n", is_signed ? "yes" : "no");
-				printf("  Content: %s\n", int_content_to_string(content));
+				printf("  Content: %s\n", ctf_int_content_to_string(content));
 			}
 			break;
 
@@ -172,7 +170,7 @@ dump_types (ctf_file file)
 				printf("     Name: %s\n", name);
 				printf("     Size: %d\n", size);
 				printf("   Offset: %d\n", offset);
-				printf("  Content: %s\n", float_encoding_to_string(encoding));
+				printf("  Content: %s\n", ctf_float_encoding_to_string(encoding));
 			}
 			break;
 
@@ -188,7 +186,7 @@ dump_types (ctf_file file)
 				ctf_array_get_length(array, &length);
 
 				char* type_string;
-				type_string = type_to_string(content_type);
+				ctf_type_to_string(content_type, &type_string);
 
 				printf("  Content: %s\n", type_string);
 				printf("   Length: %d\n", length);
@@ -256,7 +254,7 @@ dump_types (ctf_file file)
 					ctf_member_get_type(member, &member_type);
 
 					char* member_type_string;
-					member_type_string = type_to_string(member_type);
+					ctf_type_to_string(member_type, &member_type_string);
 
 					printf("       %s %s", member_type_string, member_name);
 
@@ -297,7 +295,7 @@ dump_types (ctf_file file)
 				ctf_typedef_get_type(_typedef, &old_type);
 
 				char* type_string;
-				type_string = type_to_string(old_type);
+				ctf_type_to_string(old_type, &type_string);
 
 				printf(" Old type: %s\n", type_string);
 				printf(" New type: %s\n", name);
@@ -318,7 +316,7 @@ dump_types (ctf_file file)
 				ctf_function_get_return_type(function, &return_type);
 
 				char* return_type_string;
-				return_type_string = type_to_string(return_type);
+				ctf_type_to_string(return_type, &return_type_string);
 
 				printf("     Name: %s\n", name);
 				printf("  Returns: %s\n", return_type_string);
@@ -333,7 +331,7 @@ dump_types (ctf_file file)
 					ctf_argument_get_type(argument, &argument_type);
 
 					char* argument_type_string;
-					argument_type_string = type_to_string(argument_type);
+					ctf_type_to_string(argument_type, &argument_type_string);
 
 					printf("       %s\n", argument_type_string);
 					free(argument_type_string);
@@ -352,8 +350,23 @@ dump_types (ctf_file file)
 			}
 			break;
 
-			/* FALL THROUGH */
 			case CTF_KIND_POINTER:
+			{
+				ctf_pointer pointer;
+				ctf_pointer_init(type, &pointer);
+
+				ctf_type ref_type;
+				ctf_pointer_get_type(pointer, &ref_type);
+
+				char* type_string;
+				ctf_type_to_string(ref_type, &type_string);
+
+				printf("Reference: %s\n", type_string);
+				free(type_string);
+			}
+			break;
+
+			/* FALL THROUGH */
 			case CTF_KIND_VOLATILE:
 			case CTF_KIND_CONST:
 			case CTF_KIND_RESTRICT:
@@ -362,7 +375,7 @@ dump_types (ctf_file file)
 				ctf_type_init(type, &ref_type);
 
 				char* type_string;
-				type_string = type_to_string(ref_type);
+				ctf_type_to_string(ref_type, &type_string);
 
 				printf("Reference: %s\n", type_string);
 				free(type_string);
@@ -419,7 +432,8 @@ dump_data_objects (ctf_file file)
 		ctf_type type;
 		ctf_data_object_get_type(data_object, &type);
 
-		char* type_string = type_to_string(type);
+		char* type_string;
+		ctf_type_to_string(type, &type_string);
 
 		printf(" Name: %s\n", name);	
 		printf(" Type: %s\n", type_string);	
@@ -463,7 +477,8 @@ dump_functions (ctf_file file)
 		ctf_type return_type;
 		ctf_function_get_return_type(function, &return_type);
 
-		char* return_type_string = type_to_string(return_type);
+		char* return_type_string;
+		ctf_type_to_string(return_type, &return_type_string);
 
 		printf("   Name: %s\n", name);
 		printf("Returns: %s\n", return_type_string);
@@ -477,7 +492,8 @@ dump_functions (ctf_file file)
 			ctf_type argument_type;
 			ctf_argument_get_type(argument, &argument_type);
 
-			char* argument_type_string = type_to_string(argument_type);
+			char* argument_type_string;
+			ctf_type_to_string(argument_type, &argument_type_string);
 
 			printf("     %s\n", argument_type_string);
 			free(argument_type_string);
