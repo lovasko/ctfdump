@@ -76,8 +76,8 @@ dump_general_information (ctf_file file)
 	ctf_version version;
 	ctf_file_get_version(file, &version);
 
-	ctf_bool is_compressed;
-	ctf_file_is_compressed(file, &is_compressed);
+	uint8_t is_compressed;
+	ctf_file_get_is_compressed(file, &is_compressed);
 
 	ctf_file parent_file;
 	ctf_file_get_parent_file(file, &parent_file);
@@ -113,8 +113,8 @@ dump_types (ctf_file file)
 		ctf_kind kind;
 		ctf_type_get_kind(type, &kind);
 
-		ctf_bool is_root;
-		ctf_type_is_root(type, &is_root);
+		uint8_t is_root;
+		ctf_type_get_is_root(type, &is_root);
 
 		printf("       ID: %d\n", id);	
 		printf("     Kind: %s\n", ctf_kind_to_string(kind));
@@ -136,8 +136,8 @@ dump_types (ctf_file file)
 				ctf_int_content content;
 				ctf_int_get_content(_int, &content);
 
-				ctf_bool is_signed;
-				ctf_int_is_signed(_int, &is_signed);
+				uint8_t is_signed;
+				ctf_int_get_is_signed(_int, &is_signed);
 
 				char* name;
 				ctf_int_get_name(_int, &name);
