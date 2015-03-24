@@ -5,8 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-/* #include "labels.h" */
-/* #include "data.h" */
+#include "data.h"
 #include "general.h"
 #include "labels.h"
 
@@ -126,8 +125,10 @@ main(int argc, char* argv[])
 	/* if (types_flag == 1) */
 	/* 	dump_types(file); */
 
-	/* if (data_objects_flag == 1) */
-	/* 	dump_data_objects(file); */
+	if (data_objects_flag == 1) {
+		printf("-- Data Objects ------\n");
+		dump_data_objects(file);
+	}
 
 	/* if (functions_flag == 1) */
 	/* 	dump_functions(file); */
