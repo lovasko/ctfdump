@@ -1,2 +1,0 @@
-# Thanks
-George Neville-Neil

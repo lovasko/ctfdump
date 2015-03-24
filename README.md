@@ -1,14 +1,29 @@
 # ctfdump
-Command-line BSD-licensed utility that dumps the CTF data of the selected file
-to the stdout. For more information about the CTF format please consult the
-[library](https://github.com/lovasko/libctf) that provides the format
-implementation.
+Print CTF data to `stdout`.
 
 ## Usage
-`ctfdump [-dfglt] <file>`
+`ctfdump [-adfglt] <file>`
+ * `-a` print all
+ * `-d` print data objects
+ * `-f` print function objects
+ * `-g` print general information
+ * `-l` print labels
+ * `-t` print types
+
+## Build
+```
+$ ninja
+```
+or
+```
+$ make
+```
+
+## Dependencies
+ * libctf
 
 ## Examples
-Labels:
+#### Labels
 ```
 root@FreeBSD_Box:~ # ctfdump -l /boot/kernel/zlib.ko
 -- Labels ------
@@ -16,7 +31,7 @@ root@FreeBSD_Box:~ # ctfdump -l /boot/kernel/zlib.ko
  Index: 143
 ```
 
-Data objects:
+#### Data objects
 ```
 root@FreeBSD_Box:~ # ctfdump -d /boot/kernel/zfs.ko | head -9
 -- Data Objects ------
@@ -30,7 +45,7 @@ Name: nvs_native_ops
 Type: const nvs_ops_t
 ```
 
-Types:
+#### Types
 ```
 root@FreeBSD_Box:~ # ctfdump -t /boot/kernel/if_xl.ko | head -15
 -- Types ------
@@ -49,4 +64,13 @@ root@FreeBSD_Box:~ # ctfdump -t /boot/kernel/if_xl.ko | head -15
 Old type: unsigned char
 New type: __uint8_t
 ```
+
+## License
+2-clause BSD, for more information please see the [license](LICENSE.md).
+
+## Author
+Daniel Lovasko lovasko@freebsd.org
+
+## Thanks
+ * George Neville-Neil
 
