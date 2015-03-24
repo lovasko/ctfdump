@@ -1,4 +1,4 @@
-cflags = -Wall -I/usr/include/libctf/
+cflags = -Wall -Wextra -ansi -pedantic -I/usr/include/ctf/
 ldflags = -lbsdctf
 
 rule compile
@@ -7,6 +7,9 @@ rule compile
 rule link
  command = clang -o $out $in $ldflags
 
-build bin/ctfdump: link obj/main.o 
+build bin/ctfdump: link obj/main.o obj/labels.o obj/general.o
+
 build obj/main.o: compile src/main.c
+build obj/labels.o: compile src/labels.c
+build obj/general.o: compile src/general.c
 
