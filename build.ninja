@@ -7,10 +7,12 @@ rule compile
 rule link
  command = clang -o $out $in $ldflags
 
-build bin/ctfdump: link obj/main.o obj/labels.o obj/general.o obj/data.o
+build bin/ctfdump: link obj/main.o obj/labels.o obj/general.o obj/data.o obj/functions.o obj/types.o
 
 build obj/main.o: compile src/main.c
 build obj/labels.o: compile src/labels.c
 build obj/general.o: compile src/general.c
 build obj/data.o: compile src/data.c
+build obj/functions.o: compile src/functions.c
+build obj/types.o: compile src/types.c
 
