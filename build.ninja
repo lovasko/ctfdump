@@ -1,4 +1,4 @@
-cflags = -Wall -Wextra -ansi -pedantic -I/usr/include/ctf/
+cflags = -g -Wall -Wextra -ansi -pedantic -I/usr/include/ctf/
 ldflags = -lbsdctf
 
 rule compile
