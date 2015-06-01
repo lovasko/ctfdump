@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "data.h"
+#include "dump.h"
 
 static void
-dump_data_object(ctf_data_object data_object, void* data)
+dump_data_object(void* data_object, void* data)
 {
 	ctf_type type;
 	char* symbol_name;
@@ -26,14 +26,14 @@ dump_data_object(ctf_data_object data_object, void* data)
 void
 dump_data_objects(ctf_file file)
 {
-	int rv;
+	ctf_count data_object_count;
 
-	rv = ctf_file_foreach_data_object(file, NULL, dump_data_object);
+	printf("-- Data objects --\n");
 
-	if (ctf_is_error(rv))
-		fprintf(stderr, "ctfdump: ERROR: %s\n", ctf_get_error_string(rv));
-
-	if (rv == CTF_EMPTY)
+	ctf_file_get_data_object_count(file, &data_object_count);
+	if (data_object_count == 0)
 		printf("No data objects.");
+	else
+		ctf_file_foreach_data_object(file, NULL, dump_data_object);
 }
 

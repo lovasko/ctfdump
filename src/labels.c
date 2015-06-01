@@ -1,9 +1,9 @@
 #include <stdio.h>
 
-#include "labels.h"
+#include "dump.h"
 
 static void
-dump_label(ctf_label label, void* data)
+dump_label(void* label, void* data)
 {
 	ctf_label_index index;
 	char* name;
@@ -21,14 +21,14 @@ dump_label(ctf_label label, void* data)
 void
 dump_labels(ctf_file file)
 {
-	int rv;
+	ctf_count label_count;
 
-	rv = ctf_file_foreach_label(file, NULL, dump_label);
+	printf("-- Labels -------\n");
 
-	if (ctf_is_error(rv))
-		fprintf(stderr, "ctfdump: ERROR: %s", ctf_get_error_string(rv));
-
-	if (rv == CTF_EMPTY)
-		printf("No labels.\n");
+	ctf_file_get_label_count(file, &label_count);
+	if (label_count == 0)
+		printf("No labels.");
+	else
+		ctf_file_foreach_label(file, NULL, dump_label);
 }
 

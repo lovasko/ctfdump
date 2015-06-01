@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "types.h"
+#include "dump.h"
 
 static int 
 dump_int(ctf_type type, void* arg)
@@ -102,7 +102,7 @@ dump_typedef(ctf_type type, void* arg)
 }
 
 static void 
-dump_member(ctf_member member, void* arg)
+dump_member(void* member, void* arg)
 {
 	char* member_name;
 	char* member_type_string;
@@ -145,7 +145,7 @@ dump_struct_union(ctf_type type, void* arg)
 }
 
 static void
-dump_enum_entry(ctf_enum_entry enum_entry, void* arg)
+dump_enum_entry(void* enum_entry, void* arg)
 {
 	char* entry_name;
 	ctf_enum_entry_value entry_value;
@@ -172,7 +172,7 @@ dump_enum(ctf_type type, void* arg)
 
 	printf("     Name: %s\n", name);
 
-	ctf_enum_get_enum_entry_count(_enum, &entry_count);
+	ctf_enum_get_entry_count(_enum, &entry_count);
 	if (entry_count == 0)
 		printf("    No entries.");
 	else
@@ -242,7 +242,7 @@ dump_qualifier(ctf_type type, void* arg)
 }
 
 static void
-dump_argument(ctf_argument argument, void* arg)
+dump_argument(void* argument, void* arg)
 {
 	ctf_type argument_type;
 	char* argument_type_name;
@@ -280,7 +280,7 @@ dump_function(ctf_type type, void* arg)
 }
 
 void
-dump_type(ctf_type type, void* data)
+dump_type(void* type, void* data)
 {
 	ctf_id id;
 	ctf_kind kind;
@@ -321,7 +321,7 @@ dump_types(ctf_file file)
 {
 	ctf_count type_count;
 
-	printf("-- Types ------\n");
+	printf("-- Types --------\n");
 
 	ctf_file_get_type_count(file, &type_count);
 	if (type_count == 0)

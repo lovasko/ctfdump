@@ -5,11 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "data.h"
-#include "general.h"
-#include "labels.h"
-#include "functions.h"
-#include "types.h"
+#include "dump.h"
 
 /**
  * Print the usage information.

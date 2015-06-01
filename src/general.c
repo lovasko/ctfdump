@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "general.h"
+#include "dump.h"
 
 void
 dump_general_information(ctf_file file)
