@@ -16,19 +16,17 @@ dump_data_object(void* data_object, void* data)
 	ctf_data_object_get_type(data_object, &type);
 	ctf_type_to_string(type, &type_name);
 
-	printf(" Name: %s\n", symbol_name);	
-	printf(" Type: %s\n", type_name);	
+	printf(" Name: %s\n", symbol_name);
+	printf(" Type: %s\n", type_name);
 	printf("\n");
 
-	free(type_name);
+	/* free(type_name); */
 }
 
 void
 dump_data_objects(ctf_file file)
 {
 	ctf_count data_object_count;
-
-	printf("-- Data objects --\n");
 
 	ctf_file_get_data_object_count(file, &data_object_count);
 	if (data_object_count == 0)

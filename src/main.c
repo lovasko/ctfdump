@@ -95,7 +95,6 @@ main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-
 	if ((retval = ctf_file_read(argv[optind], &file)) != CTF_OK) {
 		fprintf(stderr, "ERROR: %s\n", ctf_get_error_string(retval));
 		return EXIT_FAILURE;
@@ -111,7 +110,7 @@ main(int argc, char* argv[])
 	}
 
 	if (general_information_flag == 1) {
-		printf("-- General Information ------\n");
+		printf("-- General information ------\n");
 		dump_general_information(file);
 	}
 
@@ -126,7 +125,7 @@ main(int argc, char* argv[])
 	}
 
 	if (data_objects_flag == 1) {
-		printf("-- Data Objects ------\n");
+		printf("-- Data objects ------\n");
 		dump_data_objects(file);
 	}
 

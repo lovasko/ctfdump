@@ -321,8 +321,6 @@ dump_types(ctf_file file)
 {
 	ctf_count type_count;
 
-	printf("-- Types --------\n");
-
 	ctf_file_get_type_count(file, &type_count);
 	if (type_count == 0)
 		printf("No types.");

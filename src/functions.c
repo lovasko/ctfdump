@@ -43,8 +43,6 @@ dump_functions(ctf_file file)
 {
 	ctf_count function_count;
 
-	printf("-- Functions -----\n");
-
 	ctf_file_get_function_count(file, &function_count);
 	if (function_count == 0)
 		printf("No functions.");

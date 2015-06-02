@@ -23,8 +23,6 @@ dump_labels(ctf_file file)
 {
 	ctf_count label_count;
 
-	printf("-- Labels -------\n");
-
 	ctf_file_get_label_count(file, &label_count);
 	if (label_count == 0)
 		printf("No labels.");
