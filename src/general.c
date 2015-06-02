@@ -19,5 +19,6 @@ dump_general_information(ctf_file file)
 	printf("   Version: %d\n", version);
 	printf("Compressed: %s\n", is_compressed ? "yes" : "no");
 	printf("    Parent: %s\n", parent_file ? parent_basename : "N/A");
+	printf("\n");
 }
 
